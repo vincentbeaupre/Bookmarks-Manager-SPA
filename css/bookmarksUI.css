@@ -1,0 +1,84 @@
+
+.bookmarkRow {
+    padding: 8px;
+    padding-bottom: 0px;
+    scroll-snap-align: start;
+}
+
+.bookmarkContainer {
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    align-items: top;
+    background-color: rgb(195, 201, 212);
+    border-radius: 6px;
+}
+
+
+.bookmarkContainer .cmdIcon {
+    display: none;
+}
+
+.bookmarkContainer:hover .cmdIcon {
+    display: block;
+}
+
+.bookmarkLayout {
+    display: flex;
+    align-items: center;
+  }
+
+  .bookmarkInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bookmarkTitle {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .bookmarkCategory {
+    color: #888;
+  }
+
+.bookmarkCommandPanel {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.bookmarkdeleteForm {
+    margin: 20px;
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    background-color: white;
+    border-radius: 100%;
+    padding: 10px;
+  }
+
+.big-favicon {
+  width: 48px;
+  height: 48px;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.regular-favicon {
+    width: 24px;
+    height: 24px;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .small-favicon {
+    width: 12px;
+    height: 12px;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }

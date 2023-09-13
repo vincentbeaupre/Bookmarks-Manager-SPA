@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de favoris</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/bookmarksUI.css">
+</head>
+
+<body>
+
+    <div id="main">
+        <div id="header">
+            <i class="fa-regular fa-bookmark fa-2x" id="bookmarkIcon" title="Gestionnaire de favoris"></i>
+            <h4 id="actionTitle">Liste des favoris</h4>
+            <i class="cmdIcon fa fa-plus" id="createBookmark" title="Ajouter un favoris"></i>
+            <i class="cmdIcon fa fa-times" id="abort" title="Annuler"></i>
+            <div class="dropdown ms-auto">
+                <div data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="cmdIcon fa fa-ellipsis-vertical"></i>
+                </div>
+                <div class="dropdown-menu noselect">
+                    <!--One item per category-->
+                    <div class="dropdown-item" id="aboutCmd">
+                        <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="content">
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="js/Bookmarks_API.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/appUI.js"></script>
+</body>
+
+</html>
