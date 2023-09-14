@@ -1,5 +1,5 @@
 class Bookmarks_API {
-    static API_URL() { return "http://localhost:5000/api/bookmarks" };
+    static API_URL() { return "https://cream-acute-jingle.glitch.me/api/bookmarks" };
     static async Get(id = null) {
         return new Promise(resolve => {
             $.ajax({

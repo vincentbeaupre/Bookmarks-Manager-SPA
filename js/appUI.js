@@ -60,7 +60,6 @@ async function renderBookmarks() {
       saveContentScrollPosition();
       renderDeleteBookmarkForm(parseInt($(this).attr("deleteBookmarkId")));
     });
-    $(".bookmarkRow").on("click", function (e) { e.preventDefault(); })
   } else {
     renderError("Service introuvable");
   }
@@ -113,11 +112,15 @@ async function renderDeleteBookmarkForm(id) {
             <br>
             <div class="bookmarkRow" bookmark_id=${bookmark.Id}">
                 <div class="bookmarkContainer">
-                    <div class="bookmarkLayout">
-                        <div class="bookmarkTitle">${bookmark.Title}</div>
-                        <div class="bookmarkURL">${bookmark.URL}</div>
-                        <div class="bookmarkCategory">${bookmark.Category}</div>
-                    </div>
+                <div class="bookmarkLayout">
+                <div class="iconContainer">
+                  <span class="regular-favicon" style="background-image: url('http://www.google.com/s2/favicons?sz=64&domain=${bookmark.URL}')"></span>
+                </div>
+                <div class="bookmarkInfo">
+                  <span class="bookmarkTitle">${bookmark.Title}</span>
+                  <span class="bookmarkCategory">${bookmark.Category}</span>
+                </div>
+              </div>
                 </div>  
             </div>   
             <br>
@@ -207,9 +210,9 @@ function renderBookmark(bookmark) {
   <div class="bookmarkRow" bookmark_id="${bookmark.Id}">
   <div class="bookmarkContainer noselect">
     <div class="bookmarkLayout">
-      <div class="iconContainer">
+      <a href=${bookmark.URL} class="iconContainer">
         <span class="regular-favicon" style="background-image: url('http://www.google.com/s2/favicons?sz=64&domain=${bookmark.URL}')"></span>
-      </div>
+      </a>
       <div class="bookmarkInfo">
         <span class="bookmarkTitle">${bookmark.Title}</span>
         <span class="bookmarkCategory">${bookmark.Category}</span>
