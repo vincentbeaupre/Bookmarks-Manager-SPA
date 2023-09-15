@@ -1,17 +1,18 @@
 let contentScrollPosition = 0;
+let selectedCategory = null;
+
 Init_UI();
 
-function Init_UI() {
-  renderBookmarks();
+async function Init_UI() {
+
+  renderBookmarks(selectedCategory);
+
   $('#createBookmark').on("click", async function () {
     saveContentScrollPosition();
     renderCreateBookmarkForm();
   });
   $('#abort').on("click", async function () {
-    renderBookmarks();
-  });
-  $('#aboutCmd').on("click", function () {
-    renderAbout();
+    renderBookmarks(selectedCategory);
   });
 }
 
@@ -39,15 +40,19 @@ function renderAbout() {
             </div>
         `))
 }
-async function renderBookmarks() {
+
+async function renderBookmarks(category = null) {
   showWaitingGif();
   $("#actionTitle").text("Liste des favoris");
   $("#createBookmark").show();
   $("#abort").hide();
-  let bookmark = await Bookmarks_API.Get();
+  let bookmarks = await Bookmarks_API.Get();
   eraseContent();
-  if (bookmark !== null) {
-    bookmark.forEach(bookmark => {
+  if (bookmarks !== null) {
+    if (category) {
+      bookmarks = bookmarks.filter(bookmark => bookmark.Category === category);
+    }
+    bookmarks.forEach(bookmark => {
       $("#content").append(renderBookmark(bookmark));
     });
     restoreContentScrollPosition();
@@ -63,7 +68,78 @@ async function renderBookmarks() {
   } else {
     renderError("Service introuvable");
   }
+
+  updateDropdown();
 }
+
+async function updateDropdown() {
+  let bookmarks = await Bookmarks_API.Get();
+  populateDropdown(bookmarks);
+}
+
+function populateDropdown(bookmarks) {
+
+  const categoriesSet = new Set(bookmarks.map(b => b.Category));
+  const $dropdownMenu = $(".dropdown-menu");
+
+  $dropdownMenu.empty();
+
+  const $allItem = $('<div>', { class: 'dropdown-item d-flex align-items-center' });
+  const $checkmarkAll = $('<i>', { class: 'fa fa-check' })
+    .css('opacity', '0')
+    .css('color', 'rgb(0, 87, 204)')
+    .css('margin-right', '5px');
+  $allItem.append($checkmarkAll).append('Toutes les catégories');
+  $allItem.on('click', (e) => {
+    e.stopPropagation();
+
+    $('.dropdown-item .fa-check').css('opacity', '0');
+    $checkmarkAll.css('opacity', '1');
+    selectedCategory = null;
+    renderBookmarks();
+  });
+
+  if (selectedCategory === null) {
+    $checkmarkAll.css('opacity', '1');
+  }
+
+  $dropdownMenu.append($allItem);
+
+  const $divider = $('<div>', { class: 'dropdown-divider' });
+  $dropdownMenu.append($divider);
+
+  categoriesSet.forEach(category => {
+    const $item = $('<div>', { class: 'dropdown-item d-flex align-items-center' });
+    const $checkmark = $('<i>', { class: 'fa fa-check' })
+      .css('opacity', category === selectedCategory ? '1' : '0')
+      .css('color', 'rgb(0, 87, 204)')
+      .css('margin-right', '5px');
+    $item.append($checkmark).append(category);
+
+    $item.on('click', (e) => {
+      e.stopPropagation();
+
+      $('.dropdown-item .fa-check').css('opacity', '0');
+      $checkmark.css('opacity', '1');
+      selectedCategory = category;
+      renderBookmarks(category);
+    });
+
+    $dropdownMenu.append($item);
+  });
+
+  const $aboutDivider = $('<div>', { class: 'dropdown-divider' });
+  $dropdownMenu.append($aboutDivider);
+
+  const $aboutItem = $('<div>', { class: 'dropdown-item' });
+  const $icon = $('<i>', { class: 'menuIcon fa fa-info-circle mx-2' });
+  const $aboutText = $('<span>', { text: 'À propos...' });
+
+  $aboutItem.append($icon).append($aboutText);
+  $aboutItem.on('click', renderAbout);
+  $dropdownMenu.append($aboutItem);
+}
+
 function showWaitingGif() {
   $("#content").empty();
   $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='Loading_icon.gif' /></div>'"));
@@ -96,7 +172,7 @@ async function renderEditBookmarkForm(id) {
   if (bookmark !== null)
     renderBookmarkForm(bookmark);
   else
-    renderError("Favoris introuvable!");
+    renderError("Favori introuvable!");
 }
 async function renderDeleteBookmarkForm(id) {
   showWaitingGif();
@@ -108,7 +184,7 @@ async function renderDeleteBookmarkForm(id) {
   if (bookmark !== null) {
     $("#content").append(`
         <div class="bookmarkdeleteForm">
-            <h4>Effacer le favoris suivant?</h4>
+            <h4>Effacer le favori suivant?</h4>
             <br>
             <div class="bookmarkRow" bookmark_id=${bookmark.Id}">
                 <div class="bookmarkContainer">
@@ -128,19 +204,30 @@ async function renderDeleteBookmarkForm(id) {
             <input type="button" value="Annuler" id="cancel" class="btn btn-secondary">
         </div>    
         `);
-    $('#deleteBookmark').on("click", async function () {
-      showWaitingGif();
-      let result = await Bookmarks_API.Delete(bookmark.Id);
-      if (result)
-        renderBookmarks();
-      else
-        renderError("Une erreur est survenue!");
-    });
+        $('#deleteBookmark').on("click", async function () {
+          showWaitingGif();
+          let result = await Bookmarks_API.Delete(bookmark.Id);
+          if (result) {
+              let remainingBookmarksInCategory = await Bookmarks_API.Get();
+              if (selectedCategory) {
+                  remainingBookmarksInCategory = remainingBookmarksInCategory.filter(b => b.Category === selectedCategory);
+              }
+  
+              // If no bookmarks left in the selected category, display all bookmarks.
+              if (!remainingBookmarksInCategory.length) {
+                  selectedCategory = null; 
+              }
+  
+              renderBookmarks(selectedCategory);
+          } else {
+              renderError("Une erreur est survenue!");
+          }
+      });
     $('#cancel').on("click", function () {
-      renderBookmarks();
+      renderBookmarks(selectedCategory);
     });
   } else {
-    renderError("Favoris introuvable!");
+    renderError("Favori introuvable!");
   }
 }
 function newBookmark() {
@@ -187,12 +274,12 @@ function renderBookmarkForm(bookmark = null) {
     showWaitingGif();
     let result = await Bookmarks_API.Save(bookmark, create);
     if (result)
-      renderBookmarks();
+      renderBookmarks(selectedCategory);
     else
       renderError("Une erreur est survenue!");
   });
   $('#cancel').on("click", function () {
-    renderBookmarks();
+    renderBookmarks(selectedCategory);
   });
 }
 
